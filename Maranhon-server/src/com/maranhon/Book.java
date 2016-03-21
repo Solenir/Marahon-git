@@ -19,16 +19,19 @@ package com.maranhon;
  * @author Joel Filho e Solenir Figuerêdo
  */
 public class Book {
+    private int controlId;
     private String title;
     private String author;
     private double value;
     private int amount;
     
-    public Book (String title, String author, double value, int amount) {
+    public Book (int controlId, String title, String author, double value, int amount) {
+        this.controlId = controlId;
         this.title = title;
         this.author = author;
         this.value = value;
         this.amount = amount;
+        
     }
     
     public Book (String title) {
@@ -36,6 +39,11 @@ public class Book {
         this.title = title;
     
     }
+
+    Book(String title, String author) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     
     public String getTitleAndAuthor(){
         return this.title+""+this.author;
@@ -53,6 +61,18 @@ public class Book {
         
         return false;
        
+    }
+
+    void setAmount(int amount) {
+        this.amount += amount;
+    }
+
+    void setValue(double value) {
+        this.value = value;
+    }
+
+    public int getId() {
+        return this.controlId;
     }
     
     

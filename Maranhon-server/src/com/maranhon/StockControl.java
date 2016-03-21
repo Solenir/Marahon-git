@@ -14,6 +14,11 @@
  */
 package com.maranhon;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 
 
@@ -25,11 +30,15 @@ public class StockControl {
     
     private static StockControl uniqueInstance = new StockControl();
     private LinkedList<Book> books;
+    private int controlId;
     
     
     private StockControl (){
         this.books = new LinkedList<>();
-    
+        readingBooks();
+        this.controlId = books.size()+1;
+        
+            
     }
     
     public static StockControl getInstance () {
@@ -38,13 +47,80 @@ public class StockControl {
     }
     
     private void readingBooks() {
+            try{
+            
+            FileReader reading = new FileReader(new File("Livros.txt"));
+            BufferedReader sequentialRead = new BufferedReader(reading);
+            String line = sequentialRead.readLine();
+            String dataBook[] = null;
+            
+            while(line != null) {
+                
+                dataBook = line.split(" ");
+                books.add(new Book(Integer.parseInt(dataBook[0]), dataBook[1], dataBook[2], Double.parseDouble(dataBook[3]), Integer.parseInt(dataBook[4])));
+                
+                line = sequentialRead.readLine();
+            }
+            reading.close();
+        }
+        catch (Exception ex) {
+            System.err.println(ex.toString());
+        }
     
     
     }
+  
     
-    private boolean hasBook(String title, String author) {
+    public synchronized int registerBook (String title, String author, double value, int amount) {
     
-     return true;
+        Book book = searchForBook(title, author);
+        if (book == null){
+            Book newBook = new Book(this.controlId++, title, author, value, amount);
+            books.add(newBook);
+            try {
+                //Abre arquivo onde tem Livros ja cadastrados.
+                FileWriter file = new FileWriter(new File("Livros.txt"), true);
+                PrintWriter write = new PrintWriter(file);
+                String register = ""+newBook.getId()+" "+title+" "+author+" "+value+" "+amount;
+                //Laço de repetiçao utilizado para inserir novos usuarios no arquivo de texto.
+                while(register.length() < 50)
+                    register += " ";
+                write.write(register+"\r\n");
+                write.close();
+            } catch (Exception ex) {
+                
+                System.err.println("Erro em cadastrarCliente() de ControlClient.\n"+ex.toString());
+                return 0;
+            }
+                 
+            return 1;         
+        
+        }
+        
+        book.setAmount(amount);
+        book.setValue(value);
+        return 1;     
+    
+    } 
+    
+    private Book searchForBook(String title, String author) {
+        
+        if (books.indexOf(new Book(title, author)) != -1)
+            return books.get(books.indexOf(new Book (title, author)));
+        return null;
+            
+    
+    }    
+    public synchronized int cartPurchase (String title, String author, int amount) {
+        
+        Book book = searchForBook(title, author);
+        
+        if (book != null)
+            if (book.getAmount() >= amount)
+                return 1;
+            else
+                return book.getAmount();        
+        return 0;
     }
     
     
