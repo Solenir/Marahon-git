@@ -1,12 +1,14 @@
 package com.maranhon.control;
 
-import java.io.InputStream;
+import java.io.IOException;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+
 import java.net.Socket;
 
-import com.maranhon.model.ServerData;
+
+
 
 public class BridgeConnector extends Thread{
 
@@ -20,26 +22,54 @@ public class BridgeConnector extends Thread{
 
 	@Override
 	public void run() {
-		//TODO:	Abre um novo socket com o servidor (serverSocket), ouve um Object de clientSocket, envia para serverSocket,
-		// 		ouve a resposta de serverSocket, envia para clientSocket, fecha as conexıes
-		// Enquanto isso, sÛ vai responder o ID que foi passado, sem fazer nada.
-		try{
-			OutputStream os = clientSocket.getOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(os);
+	    //TODO:Abre um novo socket com o servidor (serverSocket), ouve um Object de clientSocket, envia para serverSocket,
+            // ouve a resposta de serverSocket, envia para clientSocket, fecha as conex√µes
+            // Enquanto isso, s√≥ vai responder o ID que foi passado, sem fazer nada.
+            try {
+
+                ObjectOutputStream send = new ObjectOutputStream(clientSocket.getOutputStream());
+                ObjectInputStream receive = new ObjectInputStream(clientSocket.getInputStream());
+
+                send.writeObject(connectToServer((String) receive.readObject()));
+
+            } catch (Exception e) {
+                System.err.println("Erro em Bridge no momento em que ira estabelecer conex√£o com serverOperator");
+
+            }
+
 		
-			InputStream is = clientSocket.getInputStream();
-			ObjectInputStream ois = new ObjectInputStream(is);
-			
-			Object x = ois.readObject();
-			
-			oos.writeObject(new Integer(server.getID()));
-		} catch(Exception e){
-			
-		}
+	     BalancerController.getInstance().disconnectedServer(server);
 		
-		
-		BalancerController bc = BalancerController.getInstance();
-		bc.disconnectedServer(server);
 	}
+        
+        public Object connectToServer(String data) {
+            
+            Object response = null;
+            Socket serverSocket = null;
+            try {
+                serverSocket = new Socket(server.getIP(), server.getPort());
+                ObjectInputStream receive = new ObjectInputStream(serverSocket.getInputStream());
+                ObjectOutputStream send = new ObjectOutputStream(serverSocket.getOutputStream());
+                
+                
+                send.writeObject(data);
+                return receive.readObject();
+                
+                
+                
+            } catch (Exception ex) {
+                BalancerController.getInstance().disconnectedServer(server);
+            }
+            finally {
+                try {
+                    serverSocket.close();
+                } catch (IOException ex) {
+                    System.err.println("Erro em Bridge Connector no momento que foi finalizar o Socket");
+                }
+            }
+            
+            return response;
+        
+        }
 	
 }

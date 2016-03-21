@@ -7,15 +7,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.maranhon.exception.NoServerOnlineException;
-import com.maranhon.model.ServerData;
+
 
 public class BalancerController {
 
-	// constantes ˙teis para o futuro. Ou n„o.
-	public static final String	balancerHost = "127.0.0.1"; // Provavelmente nunca necess·rio. N„o aqui.
-	public static final int	balancerPort = 31600; // Porta que os servers dever„o acessar para entrar no grupo
-	public static final int	servicePort  = 31699; // Porta que os clientes v„o acessar
+	// constantes √∫teis para o futuro. Ou n√£o.
+	public static final String	balancerHost = "127.0.0.1"; // Provavelmente nunca necess√°rio. N√£o aqui.
+	public static final int	balancerPort = 31600; // Porta que os servers dever√£o acessar para entrar no grupo
+	public static final int	servicePort  = 31699; // Porta que os clientes v√£o acessar
 	
 	// Singleton FTW
 	private static BalancerController instance;

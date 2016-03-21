@@ -77,7 +77,7 @@ class ClientThread implements Runnable {
                 
                 //cadastra um novo cliente;
                 case 0:
-                    customerRegister(separateData[1]);
+                    customerRegister(separateData[1], separateData[2]);
                     connectionClient.close();
                     break;
                 
@@ -106,8 +106,8 @@ class ClientThread implements Runnable {
         
     }
 
-    private void customerRegister(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void customerRegister(String login, String passWord) throws IOException {
+        send.writeObject(ControlClient.getInstance().registeringClient(login, passWord));
     }
 
     private void loginClient(String string) {

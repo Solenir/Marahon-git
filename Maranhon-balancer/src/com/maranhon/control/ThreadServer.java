@@ -1,7 +1,7 @@
 /**
  * Componente Curricular: Módulo integrador de Concorrência e Conectiviade
  * Autor: Joel pinto de Carvalho Filho e José Solenir Lima Figuerêdo
- * Data:  20/03/2016
+ * Data:  21/03/2016
  *
  * Declaramos que este código foi elaborado por nós em dupla e
  * não contém nenhum trecho de código de outro colega ou de outro autor, 
@@ -12,39 +12,38 @@
  * de avaliação. Alguns trechos do código podem coincidir com de outros
  * colegas pois estes foram discutidos em sessões tutorias.
  */
-package com.maranhon;
+package com.maranhon.control;
+
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  *
- * @author Joel Filho e Solenir Figuerêdo
+ * @author solenir
  */
-public class Client {
-    private int iD;
-    private String login;
-    private String passWord;
-    private int amountBooks;
-
-    public Client(int iD, String login, String passWord, int amountBooks) {
-        this.iD = iD;
-        this.login = login;
-        this.passWord = passWord;
-        this.amountBooks = amountBooks;
-    }
-       
-    public Client(String login) {
-        this.login = login;
-    }
-
-    public int getId() {
-        return iD;
-    }
-
-    public boolean authenticateLogin(String passWord) {
-        return this.passWord == passWord;
-    }
+public class ThreadServer extends Thread {
+    private ServerSocket serverSocket;
     
-    public boolean equals(Object obj){
-           return obj.equals(this.login);
+    
+    
+    @Override
+    public void run(){
+        
+        try {
+            serverSocket = new ServerSocket(BalancerController.balancerPort);
+            while (true){
+                Socket socket = serverSocket.accept();
+                new Thread(new ServerOnlineThread(socket)).start();
+            
+            }
+        
+        
+        } catch (Exception ex){
+        
+        
+        }
+    
+    
     }
     
 }
