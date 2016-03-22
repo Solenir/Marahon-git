@@ -7,10 +7,10 @@ public class ServerData implements Comparable<ServerData>{
 	private int serverID;
 	private int connectedClients;
 	
-	public ServerData(String ip, int port){
+	public ServerData(String ip, int port, int serverId){
 		serverIP = ip;
 		serverPort = port;
-		serverID = 0;
+		serverID = serverId;
 		connectedClients = 0;
 	}
 	

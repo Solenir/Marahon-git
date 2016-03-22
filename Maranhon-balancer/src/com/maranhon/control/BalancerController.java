@@ -1,6 +1,7 @@
 package com.maranhon.control;
 
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -15,6 +16,7 @@ public class BalancerController {
 	public static final String	balancerHost = "127.0.0.1"; // Provavelmente nunca necessário. Não aqui.
 	public static final int	balancerPort = 31600; // Porta que os servers deverão acessar para entrar no grupo
 	public static final int	servicePort  = 31699; // Porta que os clientes vão acessar
+        
 	
 	// Singleton FTW
 	private static BalancerController instance;
@@ -67,6 +69,21 @@ public class BalancerController {
 	public synchronized boolean removeServer(ServerData s){
 		return false; //TODO: Quando for remover servers, usar aqui como base
 	}
+        
+        public synchronized String ipServerList (){
+            Iterator iterador = serverQueue.iterator();
+            String listIpServers = "";
+            
+            while (iterador.hasNext())
+                listIpServers +=((ServerData)iterador.next()).getIP()+" ";
+        
+            return listIpServers;
+        }
+        
+        public synchronized int sizeQueue(){
+            return serverQueue.size();
+        }
+        
 	
 	
 }

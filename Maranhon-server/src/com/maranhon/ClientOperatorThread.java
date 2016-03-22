@@ -12,38 +12,48 @@
  * de avaliação. Alguns trechos do código podem coincidir com de outros
  * colegas pois estes foram discutidos em sessões tutorias.
  */
-package com.maranhon.control;
+package com.maranhon;
 
-import java.net.ServerSocket;
+
+import java.io.ObjectInputStream;
+
 import java.net.Socket;
+
 
 /**
  *
  * @author solenir
  */
-public class ThreadServer extends Thread {
-    private ServerSocket serverSocket;
-    private int idServer = 0;
+public class ClientOperatorThread extends Thread{
+    private Socket socket;
+    private ObjectInputStream receive;
     
-    
-    @Override
-    public void run(){
+    public void run (){
         
         try {
-            serverSocket = new ServerSocket(BalancerController.balancerPort);
-            while (true){
-                Socket socket = serverSocket.accept();
-                new Thread(new ServerOnlineThread(socket, ++idServer)).start();
+            socket = new Socket("127.0.0.1",31699);
+            receive = new ObjectInputStream(socket.getInputStream());
             
+            while(true){
+                String data = (String)receive.readObject();
+                if(data.length() > 1){
+                    TransmissionControl.getInstance().setIpServerOnline(data);
+                }
+                else 
+                    if (Integer.parseInt(data) != 0)
+                        TransmissionControl.getInstance().setIpServerOnline(data);
+                        
             }
-        
-        
-        } catch (Exception ex){
-        
-        
+            
         }
+        catch (Exception ex) {
+            System.err.println("Erro em ClienteOperatorThread em algum momento");  
+        } 
     
     
     }
+        
+        
+        
     
 }

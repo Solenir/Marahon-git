@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 
+
 /**
  *
  * @author solenir
@@ -26,13 +27,12 @@ import java.net.Socket;
 public class ServerOnlineThread extends Thread {
     private Socket socketServer;
     private ObjectOutputStream send;
-    private static final int serverOnline = 1;
     private ServerData serverData;
-   
     
-    public ServerOnlineThread(Socket socket) {
+    
+    public ServerOnlineThread(Socket socket, int serverId) {
         this.socketServer = socket;
-        this.serverData = new ServerData(socketServer.getInetAddress().getHostAddress(), 9999);    
+        this.serverData = new ServerData(socketServer.getInetAddress().getHostAddress(), 9999, serverId);    
     }
     
     @Override
@@ -40,16 +40,33 @@ public class ServerOnlineThread extends Thread {
        addServer();
         try {
             send = new ObjectOutputStream(socketServer.getOutputStream());
-                  
+            send.writeObject(BalancerController.getInstance().ipServerList());
+            send.writeObject(serverData.getID());
+            int serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
+            
+            
             while(true){
                 pause(2000);
-                send.writeObject(serverOnline);
+                
+                if (serverConnectedAnterior != BalancerController.getInstance().sizeQueue()){
+                     send.writeObject(BalancerController.getInstance().ipServerList());
+                     serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
+                }
+                else
+                    send.writeObject("0");
+                                   
             }
                     
             
         } catch (IOException ex) {
             BalancerController.getInstance().disconnectedServer(serverData);
             
+        try {
+               socketServer.close();
+           } catch (IOException ex1) {
+               System.err.println("Erro incomum em ServerOnlineThread");
+           }
+        return;
         }
         
     }

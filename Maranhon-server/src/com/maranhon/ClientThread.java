@@ -37,6 +37,8 @@ class ClientThread implements Runnable {
     private Socket connectionClient; //Armazena socke to balanceador-servidor.
     private ObjectOutputStream send; // Armazena os dados enviados pelo cliente.
     private ObjectInputStream receive; // Envia dados para o cliente.
+    private String dataReceived;
+    
 
     
     /**
@@ -65,7 +67,7 @@ class ClientThread implements Runnable {
     public void run() {
         
         try {
-            String dataReceived = (String)receive.readObject();
+            dataReceived = (String)receive.readObject();
             String separateData [] = dataReceived.split("/");
             
             
@@ -83,7 +85,7 @@ class ClientThread implements Runnable {
                 
                 //cliente é autenticado;
                 case 1:
-                    loginClient(separateData[1]);
+                    loginClient(separateData[1], separateData[2]);
                     connectionClient.close();
                     break;
                 
@@ -107,11 +109,16 @@ class ClientThread implements Runnable {
     }
 
     private void customerRegister(String login, String passWord) throws IOException {
-        send.writeObject(ControlClient.getInstance().registeringClient(login, passWord));
+        
+        int response = ControlClient.getInstance().registeringClient(login, passWord);
+        if (response == 1)
+            TransmissionControl.getInstance().customerRegister(dataReceived);
+        send.writeObject(response);
     }
 
-    private void loginClient(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void loginClient(String login, String passWord) throws IOException {
+        send.writeObject(ControlClient.getInstance().authenticateClient(login, passWord));
+        
     }
 
     private void addBook(String string) {
