@@ -59,7 +59,7 @@ public class TransmissionControl {
             Socket socket;
             try {
                 socket = new Socket(listIpServerOnline[controle], 9999);
-                new Thread(new CommunicationControlThread(new Communication(socket), data)).start();
+                new Thread(new TransmissionControlThread(new Communication(socket), data)).start();
             } catch (IOException ex) {
                 System.err.println("Não foi possivel estabelecer Conexão");
             }

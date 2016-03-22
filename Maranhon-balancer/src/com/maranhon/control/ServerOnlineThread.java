@@ -41,7 +41,7 @@ public class ServerOnlineThread extends Thread {
         try {
             send = new ObjectOutputStream(socketServer.getOutputStream());
             send.writeObject(BalancerController.getInstance().ipServerList());
-            send.writeObject(serverData.getID());
+            send.writeObject(""+serverData.getID()+"");
             int serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
             
             

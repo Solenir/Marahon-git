@@ -31,23 +31,26 @@ public class ClientOperatorThread extends Thread{
     public void run (){
         
         try {
-            socket = new Socket("127.0.0.1",31699);
+            socket = new Socket("127.0.0.1", 31600);
             receive = new ObjectInputStream(socket.getInputStream());
             
+          
             while(true){
                 String data = (String)receive.readObject();
+                System.err.println(data+""+"socorooooooooooooooo");
                 if(data.length() > 1){
                     TransmissionControl.getInstance().setIpServerOnline(data);
                 }
                 else 
                     if (Integer.parseInt(data) != 0)
                         TransmissionControl.getInstance().setIpServerOnline(data);
-                        
+                      
             }
+      
             
         }
         catch (Exception ex) {
-            System.err.println("Erro em ClienteOperatorThread em algum momento");  
+            System.err.println("Erro em ClienteOperatorThread em algum momento "+ex.getMessage());  
         } 
     
     

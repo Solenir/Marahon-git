@@ -1,12 +1,11 @@
 package com.maranhon;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 public class ClientTester extends Thread{
 
@@ -17,7 +16,7 @@ public class ClientTester extends Thread{
 	private static int finalized = 0;
 	
 	public static void main(String[] args) {
-		int tests = 90;
+		int tests = 10;
 		
 		for(int i = 0; i<tests;i++)
 			new ClientTester().start();
@@ -38,7 +37,7 @@ public class ClientTester extends Thread{
 		System.out.println();
 		System.out.println("Finalizado. Erros: "+errors);
 		for(int i = 0; i < 10; i++){
-			System.out.println("Server "+i+": "+results[i]+" conexões feitas.");
+			System.out.println("Server "+i+": "+results[i]+" conexÃµes feitas.");
 		}
 		
 	}
