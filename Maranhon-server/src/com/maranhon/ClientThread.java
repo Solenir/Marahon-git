@@ -68,8 +68,9 @@ class ClientThread implements Runnable {
         
         try {
             dataReceived = (String)receive.readObject();
-            String separateData [] = dataReceived.split("/");
-            
+            String separateData [] = dataReceived.split("!");
+            System.out.println("Veio aqui "+ separateData[0]);
+            System.out.println("Passou aqui "+ separateData[1]);
             
             /* 
              * Switch utilizado para determinar, a partir do valor atribuido
@@ -79,13 +80,14 @@ class ClientThread implements Runnable {
                 
                 //cadastra um novo cliente;
                 case 0:
-                    customerRegister(separateData[1], separateData[2]);
+                    
+                    customerRegister(separateData[1]);
                     connectionClient.close();
                     break;
                 
                 //cliente é autenticado;
                 case 1:
-                    loginClient(separateData[1], separateData[2]);
+                    loginClient(separateData[1]);
                     connectionClient.close();
                     break;
                 
@@ -97,7 +99,7 @@ class ClientThread implements Runnable {
                     
                 //Finaliza coompra dos livros que estão no carrinho;
                 case 3:
-                    chekout(separateData);
+                    chekout(separateData[1]);
                     connectionClient.close();                     
             }
                               
@@ -108,16 +110,23 @@ class ClientThread implements Runnable {
         
     }
 
-    private void customerRegister(String login, String passWord) throws IOException {
+    private void customerRegister(String dataReceived) throws IOException {
         
-        int response = ControlClient.getInstance().registeringClient(login, passWord);
-        if (response == 1)
-            TransmissionControl.getInstance().customerRegister(dataReceived);
-        send.writeObject(response);
+        String data [] = dataReceived.split("/");
+     
+        
+        int response = ControlClient.getInstance().registeringClient(data[0],data[1], data[2]);
+        if (response == 1 && data[3].equals("-1")) {
+            send.writeObject(response);
+            //TransmissionControl.getInstance().customerRegister(this.dataReceived.replace("-1",""+TransmissionControl.getInstance().getserverIdControlled()+""));
+                       
+        }
+        
     }
 
-    private void loginClient(String login, String passWord) throws IOException {
-        send.writeObject(ControlClient.getInstance().authenticateClient(login, passWord));
+    private void loginClient(String dataReceived) throws IOException {
+        String data [] = dataReceived.split("/");
+        send.writeObject(ControlClient.getInstance().authenticateClient(data[0],data[1]));
         
     }
 
@@ -125,7 +134,7 @@ class ClientThread implements Runnable {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void chekout(String[] separateData) {
+    private void chekout(String separateData) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

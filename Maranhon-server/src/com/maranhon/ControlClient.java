@@ -62,12 +62,12 @@ public class ControlClient {
             FileReader reading = new FileReader(new File("Clientes.txt"));
             BufferedReader sequentialRead = new BufferedReader(reading);
             String line = sequentialRead.readLine();
-            String dataClient[] = null;
+            String dataClient[];
             
             while(line != null) {
                 
                 dataClient = line.split(" ");
-                clients.add(new Client(Integer.parseInt(dataClient[0]), dataClient[1], dataClient[2], Integer.parseInt(dataClient[3])));
+                clients.add(new Client(Integer.parseInt(dataClient[0]), dataClient[1], dataClient[2], dataClient[3], Integer.parseInt(dataClient[4])));
                 
                 line = sequentialRead.readLine();
             }
@@ -104,13 +104,13 @@ public class ControlClient {
      * Método que realiza busca de clientes. Procura um determinado cliente na
      * lista de clientes cadastrados.
      * 
-     * @param login String com o nome de login.
+     * @param cpf String com o cpf do Cliente.
      * @return Cliente, se encontrado. Null, caso o contrário.
      */
-    public Client searchForClient(String login){
-        if(clients.indexOf(new Client(login)) == -1)
+    public Client searchForClient(String cpf){
+        if(clients.indexOf(new Client(cpf)) == -1)
             return null;
-        return clients.get(clients.indexOf(new Client(login)));
+        return clients.get(clients.indexOf(new Client(cpf)));
     }
       
     /**
@@ -123,17 +123,19 @@ public class ControlClient {
      * @param passWord  String com a senha.
      * @return 1 se cadastrado ou 0 se não.
      */
-    public synchronized int registeringClient(String login, String passWord){
+    public synchronized int registeringClient(String login, String passWord, String cpf){
         
-        if(searchForClient(login) == null){
+        if(searchForClient(cpf) == null){
             
-            Client newClient = new Client(controlID++, login, passWord, 0);
+            Client newClient = new Client(controlID++, login, passWord, cpf, 0);
             clients.add(newClient);
             try {
                 //Abre arquivo onde tem usuários ja cadastrados.
+              
                 FileWriter file = new FileWriter(new File("Clientes.txt"), true);
+                
                 PrintWriter write = new PrintWriter(file);
-                String register = ""+newClient.getId()+" "+login+" "+passWord+" "+"0";
+                String register = ""+newClient.getId()+" "+login+" "+passWord+" "+cpf+" "+"0";
                 //Laço de repetiçao utilizado para inserir novos usuarios no arquivo de texto.
                 while(register.length() < 50)
                     register += " ";
@@ -142,11 +144,12 @@ public class ControlClient {
             } catch (Exception ex) {
                 System.err.println("Erro em cadastrarCliente() de ControlClient.\n"+ex.toString());
             }
-            
+       
             return 1; 
         }
-        
+       
         return 0;
+        
     }
     
 }

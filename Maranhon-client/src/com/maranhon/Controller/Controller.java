@@ -17,8 +17,8 @@ import java.net.Socket;
  */
 public class Controller {
 
-    public int registeringClient(String login, String passWord) {
-        return (int)connectServer("0"+"/"+login+"/"+passWord);
+    public int registeringClient(String login, String passWord, String cpf) {
+        return (int)connectServer("0"+"!"+login+"/"+passWord+"/"+cpf+"/"+"-1");
     }
     
     

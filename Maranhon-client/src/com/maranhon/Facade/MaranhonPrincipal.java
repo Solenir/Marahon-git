@@ -20,14 +20,14 @@ public class MaranhonPrincipal {
         Facade facade = new Facade();
         
         Scanner input = new Scanner(System.in);
-        String login, passWord = null;
+        String login, passWord, cpf = null;
         
         System.out.println("Informe seu nome por favor.");
         login = input.nextLine();
         System.out.println("Informe sua senha por favor.");
         passWord = input.nextLine();
         
-        if (facade.registeringClient(login, passWord) == 1)
+        if (facade.registeringClient(login, passWord, cpf) == 1)
             System.out.println("Cadastrado com sucesso!");
         
         

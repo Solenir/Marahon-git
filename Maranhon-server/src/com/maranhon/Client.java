@@ -22,12 +22,15 @@ public class Client {
     private int iD;
     private String login;
     private String passWord;
+    private String cpf;
     private int amountBooks;
+    
 
-    public Client(int iD, String login, String passWord, int amountBooks) {
+    public Client(int iD, String login, String passWord, String cpf, int amountBooks) {
         this.iD = iD;
         this.login = login;
         this.passWord = passWord;
+        this.cpf = cpf;
         this.amountBooks = amountBooks;
     }
        
@@ -44,7 +47,7 @@ public class Client {
     }
     
     public boolean equals(Object obj){
-           return obj.equals(this.login);
+          return ((Client)obj).cpf.equals(this.cpf);
     }
     
 }

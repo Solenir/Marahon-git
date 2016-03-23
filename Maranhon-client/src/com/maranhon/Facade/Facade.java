@@ -18,8 +18,8 @@ public class Facade {
         this.controller = new Controller();
     }
     
-    public int registeringClient(String login, String passWord){
-        return this.controller.registeringClient(login, passWord);
+    public int registeringClient(String login, String passWord, String cpf){
+        return this.controller.registeringClient(login, passWord, cpf);
         
     }
     
