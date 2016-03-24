@@ -53,7 +53,7 @@ public class TransmissionControl {
     
     
     }
-    private void createConnection(String data){
+    private synchronized void createConnection(String data){
         
         for (int controle = 0; controle < listIpServerOnline.length; controle++){
             Socket socket;

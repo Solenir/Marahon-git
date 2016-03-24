@@ -61,7 +61,7 @@ public class ServerOperatorThread extends Thread {
         }
         
         } catch (IOException ex) {
-            System.err.println("Erro em ServerOperatorThread");
+            System.err.println("Erro em ServerOperatorThread "+ex.getMessage());
         }
         
    

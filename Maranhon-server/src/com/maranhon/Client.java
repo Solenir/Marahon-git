@@ -34,8 +34,8 @@ public class Client {
         this.amountBooks = amountBooks;
     }
        
-    public Client(String login) {
-        this.login = login;
+    public Client(String cpf) {
+        this.cpf = cpf;
     }
 
     public int getId() {

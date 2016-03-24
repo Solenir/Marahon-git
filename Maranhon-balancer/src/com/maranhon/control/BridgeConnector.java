@@ -33,7 +33,7 @@ public class BridgeConnector extends Thread{
                 send.writeObject(connectToServer((String) receive.readObject()));
 
             } catch (Exception e) {
-                System.err.println("Erro em Bridge no momento em que ira estabelecer conexão com serverOperator");
+                System.err.println("Erro em Bridge no momento em que ira estabelecer conexão com serverOperator "+ e.getMessage());
 
             }
 

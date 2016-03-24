@@ -69,8 +69,7 @@ class ClientThread implements Runnable {
         try {
             dataReceived = (String)receive.readObject();
             String separateData [] = dataReceived.split("!");
-            System.out.println("Veio aqui "+ separateData[0]);
-            System.out.println("Passou aqui "+ separateData[1]);
+            
             
             /* 
              * Switch utilizado para determinar, a partir do valor atribuido

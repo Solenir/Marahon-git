@@ -40,8 +40,9 @@ public class ServerOnlineThread extends Thread {
        addServer();
         try {
             send = new ObjectOutputStream(socketServer.getOutputStream());
-            send.writeObject(BalancerController.getInstance().ipServerList());
             send.writeObject(""+serverData.getID()+"");
+            send.writeObject(BalancerController.getInstance().ipServerList().replace(serverData.getIP(),""));
+            
             int serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
             
             
@@ -49,7 +50,7 @@ public class ServerOnlineThread extends Thread {
                 pause(2000);
                 
                 if (serverConnectedAnterior != BalancerController.getInstance().sizeQueue()){
-                     send.writeObject(BalancerController.getInstance().ipServerList());
+                     send.writeObject(""+BalancerController.getInstance().ipServerList().replace(serverData.getIP(),""));
                      serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
                 }
                 else

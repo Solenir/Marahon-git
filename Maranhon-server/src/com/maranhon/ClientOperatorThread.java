@@ -27,6 +27,7 @@ import java.net.Socket;
 public class ClientOperatorThread extends Thread{
     private Socket socket;
     private ObjectInputStream receive;
+    private String dataReceived;
     
     public void run (){
         
@@ -34,16 +35,13 @@ public class ClientOperatorThread extends Thread{
             socket = new Socket("127.0.0.1", 31600);
             receive = new ObjectInputStream(socket.getInputStream());
             
-          
+            dataReceived = (String) receive.readObject();
+            TransmissionControl.getInstance().setserverIdControlled(dataReceived);
+            System.out.println("DADOOOO RECEBIDOOOO "+ dataReceived);
             while(true){
-                String data = (String)receive.readObject();
-                System.err.println(data+""+"socorooooooooooooooo");
-                if(data.length() > 1){
-                    TransmissionControl.getInstance().setIpServerOnline(data);
-                }
-                else 
-                    if (Integer.parseInt(data) != 0)
-                        TransmissionControl.getInstance().setIpServerOnline(data);
+                dataReceived = (String)receive.readObject();
+                if(dataReceived.length() > 1)
+                    TransmissionControl.getInstance().setIpServerOnline(dataReceived);
                       
             }
       
