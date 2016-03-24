@@ -23,7 +23,7 @@ public class TransmissionControlThread extends Thread{
             communicationServerOperator.send(data);
             communicationServerOperator.receive();
         } catch (Exception ex) {
-            System.err.println("Erro ao enviar informação");
+            System.err.println("Erro ao enviar informação "+ex.getMessage());
         } 
         
         finally{

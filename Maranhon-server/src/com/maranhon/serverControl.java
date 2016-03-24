@@ -5,6 +5,8 @@
  */
 package com.maranhon;
 
+import java.util.Random;
+
 /**
  *
  * @author solenir
@@ -12,8 +14,10 @@ package com.maranhon;
 public class serverControl {
     
     public static void main (String arg []){
-        new Thread(new ServerOperatorThread()).start();
-        new Thread(new ClientOperatorThread()).start();
+        int porta = new Random().nextInt(80) + 50000;
+        System.out.println(porta);
+        new Thread(new ServerOperatorThread(porta)).start();
+        new Thread(new ClientOperatorThread(porta)).start();
     
     }
     

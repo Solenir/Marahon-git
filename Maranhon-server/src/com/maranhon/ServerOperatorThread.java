@@ -24,12 +24,18 @@ import java.net.*;
  * @author Joel Filho e Solenir Figuerêdo
  */
 public class ServerOperatorThread extends Thread {
+    private int porta;
+    
+    public ServerOperatorThread(int porta){
+        this.porta = porta;
+        
+    } 
     
     @Override
     public void run(){
                
-        int porta = 9999; // Porta utilizada pelo servidor para estabeler comunicação com clientes.
         
+        System.out.println("HOJEEEEEEE "+ porta);
         /* Instanciando objeto do tipo ServerSocket utilizado
          * para estabelecer conexao TCP com algum cliente que
          * deseje se conectar ao servidor.

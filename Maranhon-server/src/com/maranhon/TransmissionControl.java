@@ -14,7 +14,11 @@
  */
 package com.maranhon;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -54,12 +58,21 @@ public class TransmissionControl {
     
     }
     private synchronized void createConnection(String data){
-        
+        System.out.println("O DADO QUE CHEGOU FOI "+ data);
         for (int controle = 0; controle < listIpServerOnline.length; controle++){
             Socket socket;
+            
+                  
+            String dataConnection [] = listIpServerOnline[controle].split("/");
+            System.out.println("Ip "+ dataConnection[0]);
+            System.out.println("porta "+ dataConnection[1]);
+            
             try {
-                socket = new Socket(listIpServerOnline[controle], 9999);
-                new Thread(new TransmissionControlThread(new Communication(socket), data)).start();
+                if (controle!=0/*!InetAddress.getLocalHost().getHostAddress().equals(dataConnection[0])*/){
+                    
+                    socket = new Socket(dataConnection[0], Integer.parseInt(dataConnection[1]));
+                    new Thread(new TransmissionControlThread(new Communication(socket), data)).start();
+                }
             } catch (IOException ex) {
                 System.err.println("Não foi possivel estabelecer Conexão");
             }

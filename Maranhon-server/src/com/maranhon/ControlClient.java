@@ -125,7 +125,7 @@ public class ControlClient {
      */
     public synchronized int registeringClient(String login, String passWord, String cpf){
         
-        if(searchForClient(cpf) == null){
+        //if(searchForClient(cpf) == null){
             
             Client newClient = new Client(controlID++, login, passWord, cpf, 0);
             clients.add(newClient);
@@ -146,9 +146,9 @@ public class ControlClient {
             }
        
             return 1; 
-        }
+        //}
        
-        return 0;
+        //return 0;
         
     }
     

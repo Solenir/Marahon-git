@@ -110,18 +110,17 @@ class ClientThread implements Runnable {
     }
 
     private void customerRegister(String dataReceived) throws IOException {
-        
+        System.out.println("Ai Meu Deussssssssssssssssssssssss "+ dataReceived);
         String data [] = dataReceived.split("/");
      
         
         int response = ControlClient.getInstance().registeringClient(data[0],data[1], data[2]);
         if (response == 1 && data[3].equals("-1")) {
             send.writeObject(response);
-            //TransmissionControl.getInstance().customerRegister(this.dataReceived.replace("-1",""+TransmissionControl.getInstance().getserverIdControlled()+""));
+            TransmissionControl.getInstance().customerRegister(this.dataReceived.replace("-1",""+TransmissionControl.getInstance().getserverIdControlled()+""));
                        
         } else
-            if (response == 0 && data[3].equals("-1"))
-                send.writeObject(response);
+            send.writeObject(response);
         
         
     }

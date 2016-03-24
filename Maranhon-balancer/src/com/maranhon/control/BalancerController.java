@@ -73,10 +73,11 @@ public class BalancerController {
         public synchronized String ipServerList (){
             Iterator iterador = serverQueue.iterator();
             String listIpServers = "";
-            
-            while (iterador.hasNext())
-                listIpServers +=((ServerData)iterador.next()).getIP()+" ";
-        
+            ServerData server = null;
+            while (iterador.hasNext()){
+                server = (ServerData)iterador.next();
+                listIpServers += server.getIP()+"/"+server.getPort()+" ";
+            }
             return listIpServers;
         }
         

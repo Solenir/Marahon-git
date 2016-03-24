@@ -16,6 +16,7 @@ package com.maranhon;
 
 
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import java.net.Socket;
 
@@ -27,15 +28,27 @@ import java.net.Socket;
 public class ClientOperatorThread extends Thread{
     private Socket socket;
     private ObjectInputStream receive;
+    private ObjectOutputStream send;
+    private int porta;
     private String dataReceived;
+    
+    public ClientOperatorThread(int porta){
+        System.out.println("Chegouuuuu a porta "+porta);
+        this.porta = porta;
+    }
     
     public void run (){
         
         try {
             socket = new Socket("127.0.0.1", 31600);
+            System.out.println("naoooooooooooooooooooooooooooo");
             receive = new ObjectInputStream(socket.getInputStream());
-            
+            send = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("AQUIIIIIIIIIII !!!!!!!!!!!!!!!");
+            send.writeObject(porta);
+            System.out.println("AGUARDAAAAAAAA");
             dataReceived = (String) receive.readObject();
+            System.out.println("DADOOOO RECEBIDOOOO "+ dataReceived);
             TransmissionControl.getInstance().setserverIdControlled(dataReceived);
             System.out.println("DADOOOO RECEBIDOOOO "+ dataReceived);
             while(true){

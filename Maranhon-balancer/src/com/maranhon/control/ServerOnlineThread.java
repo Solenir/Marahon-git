@@ -15,6 +15,7 @@
 package com.maranhon.control;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
@@ -27,21 +28,29 @@ import java.net.Socket;
 public class ServerOnlineThread extends Thread {
     private Socket socketServer;
     private ObjectOutputStream send;
+    private ObjectInputStream receive;
     private ServerData serverData;
+    private int serverId;
     
     
     public ServerOnlineThread(Socket socket, int serverId) {
         this.socketServer = socket;
-        this.serverData = new ServerData(socketServer.getInetAddress().getHostAddress(), 9999, serverId);    
+        this.serverId = serverId;    
     }
     
     @Override
     public void run(){
-       addServer();
+       
+      
         try {
             send = new ObjectOutputStream(socketServer.getOutputStream());
+            receive = new ObjectInputStream(socketServer.getInputStream());
+            int porta = (int) receive.readObject();
+            
+            serverData = new ServerData(socketServer.getInetAddress().getHostAddress(), porta, serverId);
+             addServer();
             send.writeObject(""+serverData.getID()+"");
-            send.writeObject(BalancerController.getInstance().ipServerList().replace(serverData.getIP(),""));
+            send.writeObject(BalancerController.getInstance().ipServerList());
             
             int serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
             
@@ -50,7 +59,7 @@ public class ServerOnlineThread extends Thread {
                 pause(2000);
                 
                 if (serverConnectedAnterior != BalancerController.getInstance().sizeQueue()){
-                     send.writeObject(""+BalancerController.getInstance().ipServerList().replace(serverData.getIP(),""));
+                     send.writeObject(""+BalancerController.getInstance().ipServerList());
                      serverConnectedAnterior = BalancerController.getInstance().sizeQueue() ;
                 }
                 else
@@ -59,7 +68,7 @@ public class ServerOnlineThread extends Thread {
             }
                     
             
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             BalancerController.getInstance().disconnectedServer(serverData);
             
         try {
