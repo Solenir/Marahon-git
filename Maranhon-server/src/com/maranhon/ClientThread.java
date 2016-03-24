@@ -120,7 +120,10 @@ class ClientThread implements Runnable {
             send.writeObject(response);
             //TransmissionControl.getInstance().customerRegister(this.dataReceived.replace("-1",""+TransmissionControl.getInstance().getserverIdControlled()+""));
                        
-        }
+        } else
+            if (response == 0 && data[3].equals("-1"))
+                send.writeObject(response);
+        
         
     }
 

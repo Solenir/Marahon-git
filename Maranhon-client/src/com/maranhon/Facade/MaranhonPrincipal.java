@@ -27,8 +27,13 @@ public class MaranhonPrincipal {
         System.out.println("Informe sua senha por favor.");
         passWord = input.nextLine();
         
+        System.out.println("Informe seu cpf");
+        cpf = input.nextLine();
         if (facade.registeringClient(login, passWord, cpf) == 1)
             System.out.println("Cadastrado com sucesso!");
+        else
+            System.out.println("Impossível cadastrar novo usuário!");
+            
         
         
     }
