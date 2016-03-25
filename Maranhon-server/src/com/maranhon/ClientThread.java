@@ -110,12 +110,13 @@ class ClientThread implements Runnable {
     }
 
     private void customerRegister(String dataReceived) throws IOException {
-        System.out.println("Ai Meu Deussssssssssssssssssssssss "+ dataReceived);
+        System.out.println("O dado recebido pelo método customerRegister foi: "+ dataReceived);
         String data [] = dataReceived.split("/");
      
         
         int response = ControlClient.getInstance().registeringClient(data[0],data[1], data[2]);
-        if (response == 1 && data[3].equals("-1")) {
+        System.out.println("A quantidade de ip que contem conectados é : "+ TransmissionControl.getInstance().sizeListIp() );
+        if (response == 1 && data[3].equals("-1") && TransmissionControl.getInstance().sizeListIp() > 1 ) {
             send.writeObject(response);
             TransmissionControl.getInstance().customerRegister(this.dataReceived.replace("-1",""+TransmissionControl.getInstance().getserverIdControlled()+""));
                        
@@ -131,8 +132,11 @@ class ClientThread implements Runnable {
         
     }
 
-    private void addBook(String string) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void addBook(String dataReceived) throws IOException {
+        String data[] = dataReceived.split("/");
+        System.out.println("DAdos que chegaram: "+data[0]+" "+data[1]+" "+data[2]+" "+data[3]);
+        send.writeObject((StockControl.getInstance().cartPurchase(data[0], data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]))));
+        
     }
 
     private void chekout(String separateData) {

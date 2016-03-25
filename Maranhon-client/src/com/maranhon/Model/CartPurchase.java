@@ -23,6 +23,7 @@ package com.maranhon.Model;
  * @author Joel Filho e Solenir Figuerêdo
  */
 public class CartPurchase {
+    private static CartPurchase uniqueInstance = new CartPurchase();
     
     private String livros; //Armazena o nome do livro que o cliente deseja.
     
@@ -32,17 +33,26 @@ public class CartPurchase {
      * fossemos concatenar teriámos o valor null no inicio da concatenação
      * das Strings com o título do livro que o cliente deseja.
      */
-    public CartPurchase (){
-    this.livros = "";
+    private CartPurchase (){
+        this.livros = "";
     }
+    
+    public static CartPurchase getUniqueInstance(){
+        return uniqueInstance;
+    
+    }
+    
     
     /**
      * Insere um livro no carrinho de compras;
-     * @param livro String com o nome do livro que o cliente deseja.
+     * @param title
+     * @param author
+     * @param edition
+     * @param amount
      */
-    public void insertBookCartPurchase (String livro){
+    public void insertBookCartPurchase (String title, String author, int edition, int amount){
         
-        this.livros += "/"+livro;// Concatenado o livro que o cliente deseja.
+        this.livros += title+"#"+author+"#"+edition+"#"+amount+"/";// Concatenado o livro que o cliente deseja.
     
     }
     /**

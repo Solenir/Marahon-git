@@ -21,6 +21,9 @@ public class Controller {
         return (int)connectServer("0"+"!"+login+"/"+passWord+"/"+cpf+"/"+"-1");
     }
     
+    public int addBookCartPurchase(String title, String author, int edition, int amount) {
+        return (int)connectServer("2"+"!"+title+"/"+author+"/"+edition+"/"+amount);
+    }
     
     private Object connectServer(String data){ 
         ObjectOutputStream send = null;
@@ -32,6 +35,7 @@ public class Controller {
             send = new ObjectOutputStream(socket.getOutputStream());
             receive = new ObjectInputStream(socket.getInputStream());
             send.writeObject(data);
+           
             response = receive.readObject();
                
         } catch (Exception ex){
@@ -47,6 +51,8 @@ public class Controller {
         }
         return response;
     }
+
+ 
         
         
     

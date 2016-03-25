@@ -22,10 +22,11 @@ public class Book {
     private int controlId;
     private String title;
     private String author;
+    private int edition;
     private double value;
     private int amount;
     
-    public Book (int controlId, String title, String author, double value, int amount) {
+    public Book (int controlId, String title, String author, int edition, double value, int amount) {
         this.controlId = controlId;
         this.title = title;
         this.author = author;
@@ -40,12 +41,14 @@ public class Book {
     
     }
 
-    Book(String title, String author) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    public Book (String title, String author, int edition) {
+        this.author = author;
+        this.title = title;
+        this.edition = edition;
     
-    public String getTitleAndAuthor(){
+    }
+    
+    public String getValidate(){
         return this.title+""+this.author;
     }
     
@@ -56,15 +59,24 @@ public class Book {
     @Override
     public boolean equals (Object obj){
         
-        if (obj instanceof Book)
-            return ((Book)obj).getTitleAndAuthor() == getTitleAndAuthor();
-        
-        return false;
-       
+        return ((Book)obj).getValidate().equals(getValidate());
+             
     }
-
+    
     void setAmount(int amount) {
         this.amount += amount;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public int getEdition() {
+        return edition;
     }
 
     void setValue(double value) {

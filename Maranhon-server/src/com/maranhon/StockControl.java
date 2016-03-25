@@ -56,8 +56,9 @@ public class StockControl {
             
             while(line != null) {
                 
-                dataBook = line.split(" ");
-                books.add(new Book(Integer.parseInt(dataBook[0]), dataBook[1], dataBook[2], Double.parseDouble(dataBook[3]), Integer.parseInt(dataBook[4])));
+                dataBook = line.split("/");
+              
+                books.add(new Book(Integer.parseInt(dataBook[0]), dataBook[1], dataBook[2], Integer.parseInt(dataBook[3]), Double.parseDouble(dataBook[4]), Integer.parseInt(dataBook[5].trim())));
                 
                 line = sequentialRead.readLine();
             }
@@ -71,17 +72,17 @@ public class StockControl {
     }
   
     
-    public synchronized int registerBook (String title, String author, double value, int amount) {
+    public synchronized int registerBook (String title, String author, int edition, double value, int amount) {
     
-        Book book = searchForBook(title, author);
+        Book book = searchForBook(title, author, edition);
         if (book == null){
-            Book newBook = new Book(this.controlId++, title, author, value, amount);
+            Book newBook = new Book(this.controlId++, title.toUpperCase(), author.toUpperCase(), edition, value, amount);
             books.add(newBook);
             try {
                 //Abre arquivo onde tem Livros ja cadastrados.
                 FileWriter file = new FileWriter(new File("Livros.txt"), true);
                 PrintWriter write = new PrintWriter(file);
-                String register = ""+newBook.getId()+" "+title+" "+author+" "+value+" "+amount;
+                String register = ""+newBook.getId()+" "+title.toUpperCase()+" "+author.toUpperCase()+" "+value+" "+amount;
                 //Laço de repetiçao utilizado para inserir novos usuarios no arquivo de texto.
                 while(register.length() < 50)
                     register += " ";
@@ -89,7 +90,7 @@ public class StockControl {
                 write.close();
             } catch (Exception ex) {
                 
-                System.err.println("Erro em cadastrarCliente() de ControlClient.\n"+ex.toString());
+                System.err.println("Erro em registerBook() de ControlBook.\n"+ex.toString());
                 return 0;
             }
                  
@@ -103,23 +104,29 @@ public class StockControl {
     
     } 
     
-    private Book searchForBook(String title, String author) {
+    private Book searchForBook(String title, String author, int edition) {
+       
+        Book auxiliar = new Book(title, author, edition);
         
-        if (books.indexOf(new Book(title, author)) != -1)
-            return books.get(books.indexOf(new Book (title, author)));
+        if (books.indexOf(auxiliar) != -1)
+            return books.get(books.indexOf(new Book (title, author, edition)));
         return null;
             
     
     }    
-    public synchronized int cartPurchase (String title, String author, int amount) {
+    public synchronized int cartPurchase (String title, String author, int edition, int amount) {
         
-        Book book = searchForBook(title, author);
-        
-        if (book != null)
+        Book book = searchForBook(title.toUpperCase(),author.toUpperCase(), edition);
+        System.out.println("O livro que foi encontrado foi "+ book);
+        if (book != null){
+             System.out.println(book.getId()+"ffffffddf");
             if (book.getAmount() >= amount)
                 return 1;
             else
-                return book.getAmount();        
+                return book.getAmount(); 
+         
+        }    
+        System.out.println("Babadooooooooo");
         return 0;
     }
     

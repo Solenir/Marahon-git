@@ -66,8 +66,13 @@ public class ControlClient {
             
             while(line != null) {
                 
-                dataClient = line.split(" ");
-                clients.add(new Client(Integer.parseInt(dataClient[0]), dataClient[1], dataClient[2], dataClient[3], Integer.parseInt(dataClient[4])));
+                dataClient = line.split("/");
+                System.out.println(dataClient[0]);
+                System.out.println(dataClient[1]);
+                 System.out.println(dataClient[2]);
+                System.out.println(dataClient[3]);
+                System.out.println(dataClient[4]);
+                clients.add(new Client(Integer.parseInt(dataClient[0]), dataClient[1], dataClient[2], dataClient[3], Integer.parseInt(dataClient[4].trim())));
                 
                 line = sequentialRead.readLine();
             }
@@ -89,7 +94,7 @@ public class ControlClient {
      */
     public int authenticateClient(String login, String passWord) {
         
-        Client client = searchForClient(login);
+        Client client = searchForClient(login.toUpperCase());
         
         if(client != null){
             
@@ -126,8 +131,8 @@ public class ControlClient {
     public synchronized int registeringClient(String login, String passWord, String cpf){
         
         //if(searchForClient(cpf) == null){
-            
-            Client newClient = new Client(controlID++, login, passWord, cpf, 0);
+           
+            Client newClient = new Client(controlID++, login.toUpperCase(), passWord, cpf, 0);
             clients.add(newClient);
             try {
                 //Abre arquivo onde tem usuários ja cadastrados.
@@ -135,7 +140,7 @@ public class ControlClient {
                 FileWriter file = new FileWriter(new File("Clientes.txt"), true);
                 
                 PrintWriter write = new PrintWriter(file);
-                String register = ""+newClient.getId()+" "+login+" "+passWord+" "+cpf+" "+"0";
+                String register = ""+newClient.getId()+"/"+login.toUpperCase()+"/"+passWord+"/"+cpf+"/"+"0";
                 //Laço de repetiçao utilizado para inserir novos usuarios no arquivo de texto.
                 while(register.length() < 50)
                     register += " ";

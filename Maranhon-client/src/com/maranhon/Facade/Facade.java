@@ -23,5 +23,9 @@ public class Facade {
         
     }
     
+    public int addBookCartPurchase(String title, String author, int edition, int amount){
+        return this.controller.addBookCartPurchase(title, author, edition, amount);
+    }    
+    
     
 }

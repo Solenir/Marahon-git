@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,10 +30,17 @@ public class TransmissionControl {
     private static TransmissionControl uniqueInstance = new TransmissionControl();
     private String listIpServerOnline[]; 
     private int serverIdControlled; 
+    private LinkedList<Communication> sockets;
+    
+    private int sizePrevious;   
     
     
     private TransmissionControl (){
     
+    }
+    
+    public int sizeListIp(){
+        return listIpServerOnline.length;
     }
     
     public static TransmissionControl getInstance () {
