@@ -14,7 +14,7 @@ public class Controller {
 		
 		DomainController bc = DomainController.getInstance();
 		int port = DomainController.servicePort;
-		int servers = 1; 
+		int servers = 3; 
 		
 		ServerSocket socket = null;
 		
@@ -26,7 +26,7 @@ public class Controller {
 		}
 		
 		for(int i = 0; i < servers; i++){ //TODO: mudar isso daqui por conexão automática dos outros servidores
-			ServerData s = new ServerData("127.0.0.1", 31680, 31681);
+			ServerData s = new ServerData("127.0.0.1", 31680+2*i, 31681+2*i);
 			bc.addServer(s);
 			System.out.println("Adicionado server com ID="+s.getServerID());
 		}

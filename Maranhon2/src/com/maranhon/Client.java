@@ -21,11 +21,14 @@ public class Client extends Thread{
 	private static int[] results = new int[10];
 	private static int finalized = 0;
 	
-	public static void main(String[] args) {
-		int tests = 100;
+	public static void main(String[] args) throws InterruptedException {
+		int tests = 1000;
 		
-		for(int i = 0; i<tests;i++)
+		for(int i = 0; i<tests;i++){
 			new Client().start();
+			if(tests%100 == 0) // Pausa de 100 em 100 conexões, só pra não ter tanta thread rodando instantaneamente
+				Thread.sleep(100);
+		}
 		
 		System.out.println("Esperando finalizar os testes...");
 		
@@ -61,15 +64,15 @@ public class Client extends Thread{
 			
 			Random r = new Random();
 			int clientID = r.nextInt(100);
-			int bookID = r.nextInt(200) * 0;
-			int quantity = 1+r.nextInt(50);
+			int bookID = r.nextInt(200);
+			int quantity = 1+r.nextInt(10);
 			PurchaseRequest req = new PurchaseRequest(clientID, bookID, quantity);
 			
 			oos.writeObject(req);
 			
 			Object x = ois.readObject();
 			
-			Thread.sleep(100); // Para fins de teste, claro
+			//Thread.sleep(100); // Para fins de teste, claro
 			
 			if(x instanceof ErrorMessage){
 				System.out.println("Mensagem de erro recebida");

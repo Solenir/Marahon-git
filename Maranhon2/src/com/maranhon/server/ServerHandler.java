@@ -32,13 +32,12 @@ public class ServerHandler extends Thread{
 			Object x = ois.readObject();
 			
 			if(x instanceof PurchaseRequest){
-				// TODO: return handlePurchase
 				PurchaseRequest req = (PurchaseRequest)x;
 				String requestID = dbcontrol.publishRequest(req);
 				
 				while(!dbcontrol.isQueryDone(requestID)){ // Espera ocupada.
 					try {
-						Thread.sleep(10); 
+						Thread.sleep(1); 
 					} catch (InterruptedException e) {
 						//Nada.
 					} 

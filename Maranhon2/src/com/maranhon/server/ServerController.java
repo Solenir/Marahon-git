@@ -7,11 +7,15 @@ import com.maranhon.common.ServerData;
 public class ServerController {
 
 	private static ServerController instance;
-	private ServerData serverData;
+	private static ServerData serverData;
 	
 	private ServerController(){
-		this.serverData = new ServerData("127.0.0.1", 31680, 31681);
-		this.serverData.setServerID(0);
+		//this.serverData = new ServerData("127.0.0.1", 31680, 31681);
+		//this.serverData.setServerID(0);
+	}
+	
+	public static void initializeServer(ServerData data){
+		serverData = data;
 	}
 	
 	public static ServerController getInstance(){

@@ -25,6 +25,10 @@ public class BufferedUnicast extends Thread{
 		
 	}
 
+	public void sendObject(Object obj){
+		outputQueue.add(obj);
+	}
+	
 	public boolean isEmpty(){
 		return inputQueue.isEmpty();
 	}
@@ -57,7 +61,13 @@ public class BufferedUnicast extends Thread{
 		
 		public void run() {
 			while(true){
-				while(outputQueue.isEmpty());
+				while(outputQueue.isEmpty()){
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						
+					}
+				}
 				
 				try {
 					outputStream.writeObject(outputQueue.peek());

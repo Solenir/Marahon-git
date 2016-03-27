@@ -5,11 +5,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.maranhon.common.PurchaseRequest;
 import com.maranhon.common.PurchaseResponse;
+import com.maranhon.common.ServerData;
 import com.maranhon.server.model.Book;
 import com.maranhon.server.model.Client;
 import com.maranhon.server.model.PurchaseQuery;
 import com.maranhon.server.model.QueryApproval;
 import com.maranhon.server.model.QueryTimer;
+import com.maranhon.server.multicast.MulticastData;
+import com.maranhon.server.multicast.MulticastVirtualizer;
 import com.maranhon.server.util.RequestIDGenerator;
 
 public class DatabaseController {
@@ -31,6 +34,10 @@ public class DatabaseController {
 	
 	private PriorityQueue<PurchaseQuery> executionQueue;
 	
+	private MulticastVirtualizer multicast; 
+	
+	private int successes=0, failures=0;
+	
 	private DatabaseController(){
 		clientList = new ConcurrentHashMap<>();
 		bookList = new ConcurrentHashMap<>();
@@ -47,6 +54,17 @@ public class DatabaseController {
 		initializeDatabase();
 		QueryExecutioner qex = new QueryExecutioner();
 		qex.start();
+		
+		//TODO: usar dados vindo do balanceador, não criados aqui
+		
+		
+		MulticastData initialData = new MulticastData();
+		for(int i = 0; i < serverID; i++){
+			initialData.insertServer(new ServerData("127.0.0.1", 31680+2*i, 31681+2*i));
+		}
+		multicast = new MulticastVirtualizer(initialData);
+		multicast.start();
+		
 	}
 	
 	public synchronized void authorizationReceived(QueryApproval approval){
@@ -58,7 +76,7 @@ public class DatabaseController {
 	
 	private int minimumRequiredApprovals(){
 		//TODO: pegar a quantidade de servidores em Multicast
-		return 1;
+		return 2;
 	}
 	
 	private void initializeDatabase() {
@@ -81,15 +99,16 @@ public class DatabaseController {
 	public synchronized String publishRequest(PurchaseRequest req){
 		String requestID = idgenerator.nextID();
 		logicalClock++;
-		PurchaseQuery query = new PurchaseQuery(requestID, req, logicalClock, ServerController.getInstance().getData().getServerID());
+		PurchaseQuery query = new PurchaseQuery(requestID, req, logicalClock, serverID);
 		queryAuthorizationCounter.put(requestID, 1);
 		QueryTimer timer = new QueryTimer();
 		queryDelay.put(requestID, timer);
 		timer.start();
 		
 		enqueue(query);
+		multicast.sendObject(query);
 		
-		//TODO: Enviar a query no MulticastVirtualizer
+		//System.out.println("Purchase request received. And retransmitted. I hope.");
 		
 		return requestID;
 	}
@@ -142,15 +161,39 @@ public class DatabaseController {
 		else
 			System.out.println("Tentou comprar: "+query.getBookID()+"x"+query.getBookCount()+". Restante: "+book.getAvailable());
 		
-		PurchaseResponse response = new PurchaseResponse(rID, serverID, done);
-		//TODO: enviar response no MulticastVirtualizer
+		if(done)
+			successes++;
+		else
+			failures++;
+		
+		System.out.println("Bem-sucedidas: "+successes+", Negadas: "+failures);
 		
 		if(query.getServerID() == serverID){
 			queryAuthorizationCounter.remove(rID);
 			queryDelay.remove(rID);
+			PurchaseResponse response = new PurchaseResponse(rID, serverID, done);
 			outputList.put(rID, response);
+		} else{
+			QueryApproval approval = new QueryApproval(rID, serverID, done);
+			multicast.sendObject(approval);
+			//System.out.println("Aprovação Enviada");
 		}
 		
+	} 
+	
+	public synchronized void processClusterData(Object obj){
+		if(obj instanceof QueryApproval){
+			//System.out.println("Query approved");
+			authorizationReceived((QueryApproval)obj);
+		} else if(obj instanceof PurchaseQuery){
+			//System.out.println("Query received");
+			PurchaseQuery q = (PurchaseQuery)obj;
+			logicalClock = Math.max(logicalClock, q.getLogicalClock());
+			enqueue(q);
+			QueryTimer timer = new QueryTimer();
+			queryDelay.put(q.getRequestID(), timer);
+			timer.start();
+		}
 	} 
 	
 	private class QueryExecutioner extends Thread{
@@ -159,7 +202,7 @@ public class DatabaseController {
 			while(true){
 				executeNextQuery();
 				try {
-					Thread.sleep(10);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// Espero que nunca chegue aqui. Senão, ferrou.
 				}
