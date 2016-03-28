@@ -22,11 +22,11 @@ public class Client extends Thread{
 	private static int finalized = 0;
 	
 	public static void main(String[] args) throws InterruptedException {
-		int tests = 1000;
+		int tests = 5;
 		
 		for(int i = 0; i<tests;i++){
 			new Client().start();
-			if(tests%100 == 0) // Pausa de 100 em 100 conexões, só pra não ter tanta thread rodando instantaneamente
+			if(tests%100 == 0) // Pausa de 100 em 100 conexï¿½es, sï¿½ pra nï¿½o ter tanta thread rodando instantaneamente
 				Thread.sleep(100);
 		}
 		
@@ -45,8 +45,8 @@ public class Client extends Thread{
 		System.out.println();
 		System.out.println();
 		System.out.println("Finalizado. Erros: "+errors);
-		for(int i = 0; i < 10; i++){
-			System.out.println("Server "+i+": "+results[i]+" conexões feitas.");
+		for(int i = 0; i < 5; i++){
+			System.out.println("Server "+i+": "+results[i]+" conexï¿½es feitas.");
 		}
 		
 	}

@@ -19,6 +19,7 @@ public class ServerHandler extends Thread{
 		this.clientSocket = socket;
 	}
 
+        @Override
 	public void run() {
 		DatabaseController dbcontrol = DatabaseController.getInstance();
 		
