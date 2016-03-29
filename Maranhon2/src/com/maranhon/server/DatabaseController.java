@@ -4,6 +4,9 @@ import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import com.maranhon.common.PurchaseRequest;
 import com.maranhon.common.PurchaseResponse;
 import com.maranhon.server.model.Book;
@@ -167,6 +170,8 @@ public class DatabaseController {
 		boolean done = book.buyBook(query.getBookCount());
 		if(done){
 			clientList.get(query.getClientID()).increaseValueBought(query.getBookCount() * book.getPrice());
+			writerFileBook();
+			writerFileClient();
 		}
 		
 		if(done)
@@ -264,5 +269,39 @@ public class DatabaseController {
 	
 	public int getLocked(){return locked;}
 	public boolean getRunning(){return isRunning;}
+
+
+
+	public synchronized void writerFileBook() throws IOException{
+		 FileWriter file = new FileWriter("1_livros.txt");
+	     PrintWriter writer = new PrintWriter(file);
+	     
+	     writer.println(logicalClock);
+	      for (int i = 0; i < 200; i++){
+	          Book book = bookList.get(i);
+	          String dado =""+i+" "+book.getPrice()+" "+book.getAvailable();
+	          writer.println(dado);
+	      }
+	      
+	      writer.close();
+	        
+		
+	}
+	
+	public synchronized void writerFileClient() throws IOException{
+		 FileWriter file = new FileWriter("1_clientes.txt");
+	     PrintWriter writer = new PrintWriter(file);
+	     
+	     writer.println(logicalClock);
+	      for (int i = 0; i < 100; i++){
+	          Client client = clientList.get(i);
+	          String dado =""+i+" "+client.getAmountBought();
+	          writer.println(dado);
+	      }
+	      
+	      writer.close();
+	        
+		
+	}
 	
 }
