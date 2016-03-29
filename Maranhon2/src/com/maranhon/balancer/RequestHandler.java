@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.maranhon.common.ErrorMessage;
-import com.maranhon.common.ServerData;
+
 import com.maranhon.common.ErrorMessage.ErrorType;
 
 public class RequestHandler extends Thread{
@@ -40,7 +40,8 @@ public class RequestHandler extends Thread{
 				oos.writeObject(err);
 				return;
 			}
-				
+	 
+                        System.out.println("Aquiiiiii"+server.getServerIP()+" "+server.getServerHostPort());
 			serverSocket = new Socket(server.getServerIP(), server.getServerHostPort());
 			
 			OutputStream sos = serverSocket.getOutputStream();
@@ -62,7 +63,7 @@ public class RequestHandler extends Thread{
 				if(serverSocket != null)
 					serverSocket.close();
 			} catch (IOException e) {
-				//Se falhou em fechar algo, deixa aberto eternamente. Ou então é porque já fechou, mesmo...
+				//Se falhou em fechar algo, deixa aberto eternamente. Ou entï¿½o ï¿½ porque jï¿½ fechou, mesmo...
 			}
 		}
 		

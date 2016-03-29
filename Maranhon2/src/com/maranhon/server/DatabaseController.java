@@ -30,10 +30,10 @@ public class DatabaseController {
 	private int logicalClock;
 	private int serverID;
 	
-	private ConcurrentHashMap<String, Integer> queryAuthorizationCounter; // Contador da quantidade de autorizações recebidas para executar
+	private ConcurrentHashMap<String, Integer> queryAuthorizationCounter; // Contador da quantidade de autorizaï¿½ï¿½es recebidas para executar
 	private ConcurrentHashMap<String, QueryTimer> queryDelay;
 	
-	private ConcurrentHashMap<String, PurchaseResponse> outputList; //Requests que já foram executadas e estão esperando serem chamadas para sair
+	private ConcurrentHashMap<String, PurchaseResponse> outputList; //Requests que jï¿½ foram executadas e estï¿½o esperando serem chamadas para sair
 	
 	private PriorityQueue<PurchaseQuery> executionQueue;
 	
@@ -58,7 +58,7 @@ public class DatabaseController {
 		QueryExecutioner qex = new QueryExecutioner();
 		qex.start();
 		
-		//TODO: usar dados vindo do balanceador, não criados aqui
+		//TODO: usar dados vindo do balanceador, nï¿½o criados aqui
 		
 		
 		MulticastData initialData = new MulticastData();
@@ -73,7 +73,7 @@ public class DatabaseController {
 	public synchronized void authorizationReceived(QueryApproval approval){
 		Integer i = queryAuthorizationCounter.get(approval.getRequestID());
 		if(i == null)
-			return; //Já deve ter passado do mínimo, executou a bagaça e o cara chegou nesse caso especial. TODO: Imprimir algo para testar 
+			return; //Jï¿½ deve ter passado do mï¿½nimo, executou a bagaï¿½a e o cara chegou nesse caso especial. TODO: Imprimir algo para testar 
 		queryAuthorizationCounter.put(approval.getRequestID(), i+1);
 	}
 	
@@ -175,7 +175,7 @@ public class DatabaseController {
 		} else{
 			QueryApproval approval = new QueryApproval(rID, serverID, done);
 			multicast.sendObject(approval);
-			//System.out.println("Aprovação Enviada");
+			//System.out.println("Aprovaï¿½ï¿½o Enviada");
 		}
 		
 	} 
@@ -203,18 +203,18 @@ public class DatabaseController {
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
-					// Espero que nunca chegue aqui. Senão, ferrou.
+					// Espero que nunca chegue aqui. Senï¿½o, ferrou.
 				}
 			}
 		}
 	}
 	
 	/**
-     * Método que realiza a leitura dos clientes contidos no arquivo de texto
-     * onde são armazenados e os coloca em uma hashMap de clientes.
+     * Mï¿½todo que realiza a leitura dos clientes contidos no arquivo de texto
+     * onde sï¿½o armazenados e os coloca em uma hashMap de clientes.
      */
     private void readingCustomers() {
-        
+      
         try{
             
             FileReader reading = new FileReader(new File("Client.txt"));
@@ -225,7 +225,7 @@ public class DatabaseController {
             while(line != null) {
                 
                 dataClient = line.split(" ");
-               
+                
                 clientList.put(Integer.parseInt(dataClient[0]), new Client(Double.parseDouble(dataClient[1])));
                 
                 line = sequentialRead.readLine();
@@ -239,8 +239,8 @@ public class DatabaseController {
     
 
 	/**
-     * Método que realiza a leitura dos livros contidos no arquivo de texto
-     * onde são armazenados e os coloca em um hashMap de livros.
+     * Mï¿½todo que realiza a leitura dos livros contidos no arquivo de texto
+     * onde sï¿½o armazenados e os coloca em um hashMap de livros.
      */
     private void readingBooks() {
         
@@ -250,7 +250,7 @@ public class DatabaseController {
             BufferedReader sequentialRead = new BufferedReader(reading);
             String line = sequentialRead.readLine();
             String dataBook[];
-            
+        
             while(line != null) {
                 
                 dataBook = line.split(" ");
