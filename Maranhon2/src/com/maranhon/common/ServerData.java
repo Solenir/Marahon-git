@@ -23,6 +23,11 @@ public class ServerData implements Serializable{
 	public void setServerID(int serverID) {
 		this.serverID = serverID;
 	}
+	
+	public void setServerIP(String serverIP) {
+		this.serverIP = serverIP;
+	}
+	
 	public String getServerIP() {
 		return serverIP;
 	}
@@ -37,7 +42,8 @@ public class ServerData implements Serializable{
 	public boolean equals(Object obj) {
 		if(obj instanceof ServerData){
 			ServerData sd = (ServerData)obj;
-			return sd.serverIP.equals(this.serverIP) && sd.serverClusterPort==this.serverClusterPort;
+			//return sd.serverIP.equals(this.serverIP) && sd.serverClusterPort==this.serverClusterPort;
+			return sd.serverID == this.serverID;
 		}
 		return false;
 	}

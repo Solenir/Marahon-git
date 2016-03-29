@@ -1,6 +1,7 @@
 package com.maranhon.server.multicast;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -15,15 +16,53 @@ public class MulticastVirtualizer extends Thread{
 	private ConcurrentLinkedQueue<BufferedUnicast> connections;
 	private MulticastListener listener;
 	
-	public MulticastVirtualizer(MulticastData initialData){
-		this.multicastData = initialData;
+	private static MulticastVirtualizer instance;
+	HeartBeatListener hblistener;
+	
+	private MulticastVirtualizer(){
+		this.multicastData = new MulticastData();
 		this.connections = new ConcurrentLinkedQueue<>();
 		this.listener = new MulticastListener();
+	}
+	
+	public static MulticastVirtualizer getInstance(){
+		if(instance==null)
+			instance = new MulticastVirtualizer();
+		return instance;
+	}
+	
+	public void setMulticastData(MulticastData data){
+		this.multicastData = data;
+		this.start();
+	}
+	
+	public void setHeartBeatStream(ObjectOutputStream heartbeatStream){
+		hblistener = new HeartBeatListener(heartbeatStream);
+	}
+	
+	public void sendHeartBeat(){
+		try{
+			hblistener.start();
+		} catch(Exception e){
+			
+		}
+	}
+	
+	public int getNumConnections(){
+		return connections.size();
+	}
+	
+	public synchronized void serverDisconnected(BufferedUnicast u){
+		connections.remove(u);
 	}
 	
 	public void run() {
 		this.openConnections();
 		listener.start();
+		
+		if(connections.size() == 0)
+			 DatabaseController.getInstance().startRunning();
+		
 		DatabaseController dbcontrol = DatabaseController.getInstance();
 		
 		while(true){
@@ -49,6 +88,9 @@ public class MulticastVirtualizer extends Thread{
 	
 	private void openConnections() {
 		for(ServerData s : multicastData.getServerList()){
+			if(s.getServerID() == ServerController.getInstance().getData().getServerID())
+				continue; // Não conectar a si mesmo.
+			
 			for(int tries = 0; tries < 10; tries++){
 				Socket socket;
 				try {
@@ -71,6 +113,25 @@ public class MulticastVirtualizer extends Thread{
 		
 	}
 	
+	private class HeartBeatListener extends Thread{
+		private ObjectOutputStream stream;
+		HeartBeatListener(ObjectOutputStream stream){
+			this.stream = stream;
+		}
+		
+		public void run() {
+			try{
+				stream.writeObject(new Integer(0));
+				Thread.sleep(1);
+			} catch(Exception e){
+				System.err.println("Falha na conexão com o controlador. Hora de sair.");
+				//TODO: Salvar dados antes de sair.
+				System.exit(1);
+			}
+		}
+		
+	}
+	
 	private class MulticastListener extends Thread{
 		private ServerSocket socket;
 		MulticastListener(){
@@ -88,11 +149,14 @@ public class MulticastVirtualizer extends Thread{
 			while(true){
 				try {
 					Socket s = socket.accept();
-					System.out.println("Conexão de "+s.getRemoteSocketAddress()+" na porta "+s.getPort());
+					System.out.println("Conexão de "+s.getInetAddress().getHostAddress()+" na porta "+s.getPort());
 					
 					BufferedUnicast conn = new BufferedUnicast(s);
 					connections.add(conn);
 					conn.start();
+					
+					DatabaseController.getInstance().newServer(conn);
+					DatabaseController.getInstance().executeNextQuery();
 				} catch (IOException e) {
 					System.err.println("Conexão deu ruim.");
 				}

@@ -2,16 +2,17 @@ package com.maranhon.server;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.maranhon.common.PurchaseRequest;
 import com.maranhon.common.PurchaseResponse;
-import com.maranhon.common.ServerData;
 import com.maranhon.server.model.Book;
 import com.maranhon.server.model.Client;
 import com.maranhon.server.model.PurchaseQuery;
 import com.maranhon.server.model.QueryApproval;
 import com.maranhon.server.model.QueryTimer;
-import com.maranhon.server.multicast.MulticastData;
+import com.maranhon.server.model.SystemState;
+import com.maranhon.server.multicast.BufferedUnicast;
 import com.maranhon.server.multicast.MulticastVirtualizer;
 import com.maranhon.server.util.RequestIDGenerator;
 
@@ -37,6 +38,11 @@ public class DatabaseController {
 	private MulticastVirtualizer multicast; 
 	
 	private int successes=0, failures=0;
+
+	private int locked = 0;
+	private ConcurrentLinkedQueue<BufferedUnicast> waiters;
+
+	private boolean isRunning;
 	
 	private DatabaseController(){
 		clientList = new ConcurrentHashMap<>();
@@ -48,35 +54,28 @@ public class DatabaseController {
 		executionQueue = new PriorityQueue<>();
 		
 		idgenerator = new RequestIDGenerator();
+	
+		waiters = new ConcurrentLinkedQueue<>();
 		
 		serverID = ServerController.getInstance().getData().getServerID();
+		isRunning = false;
 		
 		initializeDatabase();
-		QueryExecutioner qex = new QueryExecutioner();
-		qex.start();
 		
-		//TODO: usar dados vindo do balanceador, não criados aqui
-		
-		
-		MulticastData initialData = new MulticastData();
-		for(int i = 0; i < serverID; i++){
-			initialData.insertServer(new ServerData("127.0.0.1", 31680+2*i, 31681+2*i));
-		}
-		multicast = new MulticastVirtualizer(initialData);
-		multicast.start();
-		
+		multicast = MulticastVirtualizer.getInstance();
 	}
 	
 	public synchronized void authorizationReceived(QueryApproval approval){
 		Integer i = queryAuthorizationCounter.get(approval.getRequestID());
 		if(i == null)
-			return; //Já deve ter passado do mínimo, executou a bagaça e o cara chegou nesse caso especial. TODO: Imprimir algo para testar 
+			return; //Já deve ter passado do mínimo, executou a bagaça e o cara chegou nesse caso especial.
 		queryAuthorizationCounter.put(approval.getRequestID(), i+1);
 	}
 	
 	private int minimumRequiredApprovals(){
-		//TODO: pegar a quantidade de servidores em Multicast
-		return 2;
+		int minness = MulticastVirtualizer.getInstance().getNumConnections() + 1 - locked;
+		System.out.println("Mínimo necessário: "+minness);
+		return minness;
 	}
 	
 	private void initializeDatabase() {
@@ -108,7 +107,7 @@ public class DatabaseController {
 		enqueue(query);
 		multicast.sendObject(query);
 		
-		//System.out.println("Purchase request received. And retransmitted. I hope.");
+		System.out.println("Purchase request received. And retransmitted. I hope.");
 		
 		return requestID;
 	}
@@ -136,9 +135,23 @@ public class DatabaseController {
 	}
 	
 	public synchronized void executeNextQuery(){
-		PurchaseQuery query = executionQueue.peek();
-		if(query == null)
+		if(!isRunning)
 			return;
+		
+		PurchaseQuery query = executionQueue.peek();
+		if(query == null && locked==0)
+			return;
+		
+		if(query == null && locked > 0){
+			SystemState ss = new SystemState();
+			ss.logicalClock = logicalClock;
+			ss.bookList = bookList;
+			ss.clientList = clientList;
+			waiters.poll().sendObject(ss);
+			locked--;
+			System.out.println("Locked #"+locked);
+			return;
+		}
 		
 		String rID = query.getRequestID();
 		if(!queryDelay.get(rID).isFinished())
@@ -193,6 +206,8 @@ public class DatabaseController {
 			QueryTimer timer = new QueryTimer();
 			queryDelay.put(q.getRequestID(), timer);
 			timer.start();
+		} else if(obj instanceof SystemState){
+			initializeData((SystemState)obj);
 		}
 	} 
 	
@@ -202,7 +217,8 @@ public class DatabaseController {
 			while(true){
 				executeNextQuery();
 				try {
-					Thread.sleep(1);
+					//System.out.println("Testando... ");
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					// Espero que nunca chegue aqui. Senão, ferrou.
 				}
@@ -210,5 +226,43 @@ public class DatabaseController {
 		}
 	}
 
+	public synchronized void newServer(BufferedUnicast conn) {
+		locked++;
+		waiters.add(conn);
+		System.out.println("Servidor entrou no domínio. Estou trancado");
+	}
+
+	public boolean isLocked(){
+		return locked > 0 || !isRunning;
+	}
+
+	public synchronized void startRunning() {
+		/*SystemState ss = new SystemState();
+		ss.logicalClock = logicalClock;
+		ss.bookList = bookList;
+		ss.clientList = clientList;
+		MulticastVirtualizer.getInstance().sendObject(ss);*/
+		if(isRunning == false){
+			QueryExecutioner qex = new QueryExecutioner();
+			qex.start();
+		}
+		isRunning = true;
+		MulticastVirtualizer.getInstance().sendHeartBeat();
+		System.out.println("I'm free");
+	}
+	
+	public synchronized void initializeData(SystemState ss){
+		System.out.println("Recebido dado");
+		if(ss.logicalClock >= logicalClock){
+			logicalClock = ss.logicalClock;
+			bookList = ss.bookList;
+			clientList = ss.clientList;
+			startRunning();
+		}
+		
+	}
+	
+	public int getLocked(){return locked;}
+	public boolean getRunning(){return isRunning;}
 	
 }

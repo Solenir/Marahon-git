@@ -10,18 +10,25 @@ public class MulticastData implements Serializable{
 	private static final long serialVersionUID = 316_000000_1L;
 
 	private ConcurrentLinkedQueue<ServerData> serverList;
+	private int numOperations; // Para verificar se algo mudou.
+	
 	
 	public MulticastData(){
 		serverList = new ConcurrentLinkedQueue<>();
 	}
 	
-	public void removeServer(ServerData server){
+	public synchronized void removeServer(ServerData server){
 		serverList.remove(server);
+		numOperations++;
 	}
 	
-	public void insertServer(ServerData server){
+	public synchronized void insertServer(ServerData server){
 		serverList.add(server);
-		
+		numOperations++;
+	}
+	
+	public int getOperationsTotal(){
+		return numOperations;
 	}
 	
 	public Iterable<ServerData> getServerList(){

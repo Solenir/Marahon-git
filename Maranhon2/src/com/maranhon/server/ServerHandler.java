@@ -32,6 +32,16 @@ public class ServerHandler extends Thread{
 			Object x = ois.readObject();
 			
 			if(x instanceof PurchaseRequest){
+				
+				while(dbcontrol.isLocked()){
+					try {
+						System.out.println("Servidor travado. Running: "+dbcontrol.getRunning()+", locked: "+dbcontrol.getLocked());
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						
+					}
+				}
+				
 				PurchaseRequest req = (PurchaseRequest)x;
 				String requestID = dbcontrol.publishRequest(req);
 				

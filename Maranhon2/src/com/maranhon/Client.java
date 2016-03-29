@@ -22,9 +22,11 @@ public class Client extends Thread{
 	private static int finalized = 0;
 	
 	public static void main(String[] args) throws InterruptedException {
-		int tests = 1000;
+		int tests = 200;
 		
-		for(int i = 0; i<tests;i++){
+		Thread.sleep(1000);
+		
+		for(int i = 1; i<=tests;i++){
 			new Client().start();
 			if(tests%100 == 0) // Pausa de 100 em 100 conexões, só pra não ter tanta thread rodando instantaneamente
 				Thread.sleep(100);

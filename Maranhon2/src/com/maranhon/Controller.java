@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.maranhon.balancer.DomainController;
-import com.maranhon.common.ServerData;
+import com.maranhon.balancer.DomainHandler;
 
 public class Controller {
 
@@ -14,7 +14,6 @@ public class Controller {
 		
 		DomainController bc = DomainController.getInstance();
 		int port = DomainController.servicePort;
-		int servers = 3; 
 		
 		ServerSocket socket = null;
 		
@@ -25,11 +24,8 @@ public class Controller {
 			System.exit(1);
 		}
 		
-		for(int i = 0; i < servers; i++){ //TODO: mudar isso daqui por conexão automática dos outros servidores
-			ServerData s = new ServerData("127.0.0.1", 31680+2*i, 31681+2*i);
-			bc.addServer(s);
-			System.out.println("Adicionado server com ID="+s.getServerID());
-		}
+		DomainHandler domainHandler = new DomainHandler();
+		domainHandler.start();
 		
 		while(true){
 			try {

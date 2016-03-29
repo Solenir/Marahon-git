@@ -49,13 +49,13 @@ public class DomainController {
 	}
 	
 	public synchronized void addServer(ServerData s){
-		s.setServerID(lastServer++);
+		//s.setServerID(lastServer++);
 		connectedServers.put(lastServer, s);
 		serverQueue.add(s);
 	}
 	
-	public synchronized boolean removeServer(ServerData s){
-		return false; //TODO: Quando for remover servers, usar aqui como base
+	public synchronized void removeServer(ServerData s){
+		serverQueue.remove(s);
 	}
 
 	
