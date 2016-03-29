@@ -9,10 +9,10 @@ import com.maranhon.common.ServerData;
 
 public class DomainController {
 
-	// constantes ï¿½teis para o futuro. Ou nï¿½o.
-	public static final String	balancerHost = "127.0.0.1"; // Provavelmente nunca necessï¿½rio. Nï¿½o aqui.
-	public static final int	balancerPort = 31600; // Porta que os servers deverï¿½o acessar para entrar no grupo
-	public static final int	servicePort  = 31699; // Porta que os clientes vï¿½o acessar
+	// constantes úteis para o futuro. Ou não.
+	public static final String	balancerHost = "127.0.0.1"; // Provavelmente nunca necessário. Não aqui.
+	public static final int	balancerPort = 31600; // Porta que os servers deverão acessar para entrar no grupo
+	public static final int	servicePort  = 31699; // Porta que os clientes vão acessar
 	
 	// Singleton FTW
 	private static DomainController instance;
@@ -28,11 +28,6 @@ public class DomainController {
 		serverQueue = new LinkedList<ServerData>();
 		lastServer = 0;
 	}
-        
-        public Queue<ServerData> getServerQueue(){
-            return serverQueue;
-        
-        }
 	
 	public static DomainController getInstance(){
 		if(instance == null)

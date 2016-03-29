@@ -26,7 +26,7 @@ public class Client extends Thread{
 		
 		for(int i = 0; i<tests;i++){
 			new Client().start();
-			if(tests%100 == 0) // Pausa de 100 em 100 conexï¿½es, sï¿½ pra nï¿½o ter tanta thread rodando instantaneamente
+			if(tests%100 == 0) // Pausa de 100 em 100 conexões, só pra não ter tanta thread rodando instantaneamente
 				Thread.sleep(100);
 		}
 		
@@ -45,8 +45,8 @@ public class Client extends Thread{
 		System.out.println();
 		System.out.println();
 		System.out.println("Finalizado. Erros: "+errors);
-		for(int i = 0; i < 5; i++){
-			System.out.println("Server "+i+": "+results[i]+" conexï¿½es feitas.");
+		for(int i = 0; i < 10; i++){
+			System.out.println("Server "+i+": "+results[i]+" conexões feitas.");
 		}
 		
 	}
@@ -63,8 +63,8 @@ public class Client extends Thread{
 			ObjectInputStream ois = new ObjectInputStream(is);
 			
 			Random r = new Random();
-			int clientID = r.nextInt(100);
-			int bookID = r.nextInt(200);
+			int clientID = r.nextInt(50);
+			int bookID = r.nextInt(100);
 			int quantity = 1+r.nextInt(10);
 			PurchaseRequest req = new PurchaseRequest(clientID, bookID, quantity);
 			

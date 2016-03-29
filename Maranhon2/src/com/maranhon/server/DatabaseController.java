@@ -1,5 +1,8 @@
 package com.maranhon.server;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,14 +83,10 @@ public class DatabaseController {
 	}
 	
 	private void initializeDatabase() {
-		//TODO: usar a partir de arquivo
+		
 		logicalClock = 0;
-		for(int i=0; i<100; i++){
-			clientList.put(i, new Client());
-		}
-		for(int i=0; i<200; i++){
-			bookList.put(i, new Book(10f*(i+1)/25f, 100));
-		}	
+		readingCustomers();
+		readingBooks();	
 	}
 
 	public static DatabaseController getInstance(){
@@ -209,6 +208,65 @@ public class DatabaseController {
 			}
 		}
 	}
+	
+	/**
+     * Método que realiza a leitura dos clientes contidos no arquivo de texto
+     * onde são armazenados e os coloca em uma hashMap de clientes.
+     */
+    private void readingCustomers() {
+        
+        try{
+            
+            FileReader reading = new FileReader(new File("Client.txt"));
+            BufferedReader sequentialRead = new BufferedReader(reading);
+            String line = sequentialRead.readLine();
+            String dataClient[];
+            
+            while(line != null) {
+                
+                dataClient = line.split(" ");
+               
+                clientList.put(Integer.parseInt(dataClient[0]), new Client(Double.parseDouble(dataClient[1])));
+                
+                line = sequentialRead.readLine();
+            }
+            reading.close();
+        }
+        catch (Exception ex) {
+            System.err.println(ex.toString());
+        }
+    }
+    
+
+	/**
+     * Método que realiza a leitura dos livros contidos no arquivo de texto
+     * onde são armazenados e os coloca em um hashMap de livros.
+     */
+    private void readingBooks() {
+        
+        try{
+            
+            FileReader reading = new FileReader(new File("Book.txt"));
+            BufferedReader sequentialRead = new BufferedReader(reading);
+            String line = sequentialRead.readLine();
+            String dataBook[];
+            
+            while(line != null) {
+                
+                dataBook = line.split(" ");
+               
+                bookList.put(Integer.parseInt(dataBook[0]), new Book(Double.parseDouble(dataBook[1]), Integer.parseInt(dataBook[2])));
+                
+                line = sequentialRead.readLine();
+            }
+            reading.close();
+        }
+        catch (Exception ex) {
+            System.err.println(ex.toString());
+        }
+    }
+    
+
 
 	
 }

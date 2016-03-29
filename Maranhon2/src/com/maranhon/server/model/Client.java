@@ -8,13 +8,13 @@ public class Client implements Serializable{
 
 	private double valueBought;
 	
-	public Client(){
-		valueBought = 0;
+	public Client(double valueBought){
+		this.valueBought = valueBought ;
 	}
 	
 
 	public synchronized void increaseValueBought(double price){
-		valueBought += price;
+		this.valueBought += price;
 	}
 	
 	public double getAmountBought(){
