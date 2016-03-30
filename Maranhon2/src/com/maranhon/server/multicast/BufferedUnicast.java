@@ -47,7 +47,7 @@ public class BufferedUnicast extends Thread{
 			} catch (ClassNotFoundException e) {
 				// Se aconteceu isso, não vamos tratar algo que não existe.
 			} catch (IOException e) {
-				System.err.println("Erro de E/S em um dos unicasts do servidor (entrada). Caiu?"); //TODO: parar tudo caso dê merda. E anunciar que caiu.
+				System.err.println("Erro de E/S em um dos unicasts do servidor (entrada). Caiu?");
 				MulticastVirtualizer.getInstance().serverDisconnected(this);
 				return;
 			}
@@ -75,7 +75,7 @@ public class BufferedUnicast extends Thread{
 					outputStream.writeObject(outputQueue.peek());
 					outputQueue.poll();
 				} catch (IOException e) {
-					System.err.println("Erro de E/S em um dos unicasts do servidor (saída). Caiu?"); //TODO: mesma coisa do outro to-do.
+					System.err.println("Erro de E/S em um dos unicasts do servidor (saída). Caiu?");
 					MulticastVirtualizer.getInstance().serverDisconnected(BufferedUnicast.this);
 					return;
 				}

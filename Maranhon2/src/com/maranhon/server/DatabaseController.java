@@ -1,5 +1,8 @@
 package com.maranhon.server;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -79,7 +82,6 @@ public class DatabaseController {
 	}
 	
 	private void initializeDatabase() {
-		//TODO: usar a partir de arquivo
 		logicalClock = 0;
 		for(int i=0; i<100; i++){
 			clientList.put(i, new Client());
@@ -264,5 +266,54 @@ public class DatabaseController {
 	
 	public int getLocked(){return locked;}
 	public boolean getRunning(){return isRunning;}
+
+	public synchronized void writeFiles(){
+		isRunning = false;
+		try{
+			writerFileBook();
+			writerFileClient();
+		} catch(IOException e){
+			System.err.println("Erro de entrada e saída:");
+			e.printStackTrace();
+		} catch(Exception e){
+			System.err.println("FFFFFFFFUUUUUUUUUUUUUUUUUUUUUUU");
+			e.printStackTrace();
+		}
+		isRunning=true;
+	}
+	
+	public synchronized void writerFileBook() throws IOException{
+		 FileWriter file = new FileWriter(serverID+"_livros.txt");
+	     PrintWriter writer = new PrintWriter(file);
+	     
+	     writer.println(logicalClock);
+	      for (int i = 0; i < 200; i++){
+	          Book book = bookList.get(i);
+	          //String dado =""+i+" "+book.getPrice()+" "+book.getAvailable();
+	          //writer.println(dado);
+	          writer.printf("%d\t%.2f\t%d\r\n", i, book.getPrice(), book.getAvailable());
+	      }
+	      
+	      writer.close();
+	        
+		
+	}
+	
+	public synchronized void writerFileClient() throws IOException{
+		 FileWriter file = new FileWriter(serverID+"_clientes.txt");
+	     PrintWriter writer = new PrintWriter(file);
+	     
+	     writer.println(logicalClock);
+	      for (int i = 0; i < 100; i++){
+	          Client client = clientList.get(i);
+	          //String dado =""+i+" "+client.getAmountBought();
+	          //writer.println(dado);
+	          writer.printf("%d\t%.2f\r\n", i, client.getAmountBought());
+	      }
+	      
+	      writer.close();
+	        
+		
+	}
 	
 }

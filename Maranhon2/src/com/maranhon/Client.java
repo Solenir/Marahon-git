@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Random;
 
+import com.maranhon.balancer.DomainController;
 import com.maranhon.common.ErrorMessage;
 import com.maranhon.common.PurchaseRequest;
 import com.maranhon.common.PurchaseResponse;
@@ -15,14 +16,14 @@ import com.maranhon.common.PurchaseResponse;
 public class Client extends Thread{
 
 
-	private static String ip = "127.0.0.1";
-	private static int port = 31699;
+	private static String ip = DomainController.balancerHost;
+	private static int port = DomainController.servicePort;
 	private static int errors = 0;
 	private static int[] results = new int[10];
 	private static int finalized = 0;
 	
 	public static void main(String[] args) throws InterruptedException {
-		int tests = 200;
+		int tests = 60;
 		
 		Thread.sleep(1000);
 		

@@ -1,6 +1,7 @@
 package com.maranhon.server.multicast;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,8 +37,8 @@ public class MulticastVirtualizer extends Thread{
 		this.start();
 	}
 	
-	public void setHeartBeatStream(ObjectOutputStream heartbeatStream){
-		hblistener = new HeartBeatListener(heartbeatStream);
+	public void setHeartBeatStream(ObjectOutputStream heartbeatStream, ObjectInputStream inputStream){
+		hblistener = new HeartBeatListener(heartbeatStream, inputStream);
 	}
 	
 	public void sendHeartBeat(){
@@ -115,21 +116,25 @@ public class MulticastVirtualizer extends Thread{
 	
 	private class HeartBeatListener extends Thread{
 		private ObjectOutputStream stream;
-		HeartBeatListener(ObjectOutputStream stream){
+		private ObjectInputStream inputStream;
+		HeartBeatListener(ObjectOutputStream stream, ObjectInputStream is){
 			this.stream = stream;
+			this.inputStream = is;
 		}
 		
 		public void run() {
-			try{
-				stream.writeObject(new Integer(0));
-				Thread.sleep(1);
-			} catch(Exception e){
-				System.err.println("Falha na conexão com o controlador. Hora de sair.");
-				//TODO: Salvar dados antes de sair.
-				System.exit(1);
+			while(true){
+				try{
+					stream.writeObject(new Integer(0));
+					inputStream.readObject();
+					Thread.sleep(1);
+				} catch(Exception e){
+					System.err.println("Falha na conexão com o controlador. Hora de sair.");
+					DatabaseController.getInstance().writeFiles();
+					System.exit(1);
+				}
 			}
 		}
-		
 	}
 	
 	private class MulticastListener extends Thread{

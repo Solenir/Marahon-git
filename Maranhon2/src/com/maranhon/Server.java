@@ -42,6 +42,7 @@ public class Server {
 		
 		ServerController sc = ServerController.getInstance();
 		ObjectOutputStream heartBeatStream = null;
+		ObjectInputStream iis = null;
 		
 		DatabaseController.getInstance();
 		
@@ -52,7 +53,7 @@ public class Server {
 			heartBeatStream = new ObjectOutputStream(os);
 			
 			InputStream is = s.getInputStream();
-			ObjectInputStream iis = new ObjectInputStream(is);
+			iis = new ObjectInputStream(is);
 			
 			heartBeatStream.writeObject(data);
 			
@@ -63,7 +64,7 @@ public class Server {
 			
 		}
 		
-		MulticastVirtualizer.getInstance().setHeartBeatStream(heartBeatStream);
+		MulticastVirtualizer.getInstance().setHeartBeatStream(heartBeatStream, iis);
 		
 		ServerSocket socket = null;
 		
@@ -73,8 +74,6 @@ public class Server {
 			System.err.println("Não deu pra ouvir nessa porta. Muda aí no código a bagaça");
 			System.exit(1);
 		}
-		
-		//TODO: entrar no domínio, conectar aos outros, atualizar banco de dados
 		
 		while(true){
 			try {

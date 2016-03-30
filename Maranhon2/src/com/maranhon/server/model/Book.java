@@ -25,7 +25,7 @@ public class Book implements Serializable{
 		return price;
 	}
 	
-	public double getAvailable(){
+	public int  getAvailable(){
 		return available;
 	}
 }
